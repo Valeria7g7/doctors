@@ -1,129 +1,149 @@
-
 <?= $this->extend('main') ?>
 
 <?= $this->section('content') ?>
-
-<h2>Lista de Medicos</h2>
-<!--    quiero este boton del otro extremo -->
+<div class="container">
+    <h2>Lista de Medicos</h2>
     <div class="text-end">
-<a href="/doctor/create" class="btn btn-primary mb-3 ">
-   + Nuevo Médico
-</a>
+        <a href="<?= site_url('doctor/create') ?>" class="btn btn-primary mb-3 ">
+            + Nuevo Médico
+        </a>
     </div>
 
-<table class="table table-bordered">
+    <form action="<?= site_url('doctor/search') ?>" method="get" class="mb-3">
+        <div class="input-group mb-3">
+            <input
+                type="text"
+                name="query"
+                class="form-control"
+                placeholder="Buscar por nombre">
+            <button type="button" class="btn btn-danger"
+                onclick="document.querySelector('input[name=\'query\']').value=''; window.location='<?= site_url('doctor/search') ?>'">
+                X
+            </button>
+            <button type="submit" class="btn btn-primary">
+                Buscar
+            </button>
+        </div>
+    </form>
 
-    <thead>
+    <div class="table-responsive">
+        <table class="table table-bordered w-100">
 
-        <tr>
-            <th>ID</th>
-            <th>Nombre completo</th>
-            <th>Especialidad</th>
-            <th>Cédula</th>
-            <th>Acciones</th>
-        </tr>
+            <thead>
 
-    </thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre completo</th>
+                    <th>Especialidad</th>
+                    <th>Cédula</th>
+                    <th>Acciones</th>
+                </tr>
 
-    <tbody>
+            </thead>
 
-    <?php if (empty($doctors)): ?>
+            <tbody>
 
-        <tr>
+                <?php if (empty($doctors) || $doctors == null): ?>
 
-            <td colspan="5" class="text-center">No hay médicos registrados.</td>
+                    <tr>
 
-        </tr>
-    
+                        <td colspan="5" class="text-center">No se encontraron registros.</td>
 
-    <?php else: ?>
+                    </tr>
 
-        <?php foreach ($doctors ?? [] as $doctor): ?>
 
-            <tr>
+                <?php else: ?>
 
-                <td><?= $doctor['id'] ?></td>
+                    <?php foreach ($doctors ?? [] as $doctor): ?>
 
-                <td><?= $doctor['full_name'] ?></td>
+                        <tr>
 
-                <td><?= $doctor['specialty'] ?></td>
+                            <td><?= $doctor['id'] ?></td>
 
-                <td><?= $doctor['professional_license'] ?></td>
-              
-                <td>
-                    <a href="/doctor/edit/<?= $doctor['id'] ?>" class="btn btn-sm btn-warning">Editar</a>
-                    <button
-                        class="btn btn-danger btn-sm"
-                        data-bs-toggle="modal"
-                        data-bs-target="#deleteModal"
-                        onclick="setDoctorId(<?= $doctor['id'] ?>)">
-                        Eliminar
-                    </button>
-                </td>
+                            <td><?= $doctor['full_name'] ?></td>
 
-            </tr>
+                            <td><?= $doctor['specialty'] ?></td>
 
-        <?php endforeach; ?>
+                            <td class="<?= strlen($doctor['professional_license']) == 8 ? 'bg-success' : 'bg-warning' ?>">
+                                <?= ($doctor['professional_license']) ?>
+                            </td>
 
-    <?php endif; ?>
+                            <td>
+                                <div class="d-flex justify-content-end">
+                                    <a href="<?= site_url('doctor/edit/' . $doctor['id']) ?>" class="btn btn-sm btn-warning">Editar</a>
+                                    <button
+                                        class="btn btn-danger btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal"
+                                        onclick="setDoctorId(<?= $doctor['id'] ?>)">
+                                        Eliminar
+                                    </button>
+                                </div>
 
-    </tbody>
+                            </td>
 
-</table>
 
-<div class="modal fade" id="deleteModal">
+                        </tr>
 
-    <div class="modal-dialog">
+                    <?php endforeach; ?>
 
-        <div class="modal-content">
+                <?php endif; ?>
 
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    Confirmar eliminación
-                </h5>
-            </div>
+            </tbody>
 
-            <div class="modal-body">
-                ¿Está seguro de que desea eliminar este médico?
-            </div>
+        </table>
+    </div>
 
-            <div class="modal-footer">
+    <div class="modal fade" id="deleteModal">
 
-                <form id="deleteForm" method="post">
+        <div class="modal-dialog">
 
-                    <input type="hidden"
-                           name="_method"
-                           value="DELETE">
+            <div class="modal-content">
 
-                    <button type="submit"
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        Confirmar eliminación
+                    </h5>
+                </div>
+
+                <div class="modal-body">
+                    ¿Está seguro de que desea eliminar este médico?
+                </div>
+
+                <div class="modal-footer">
+
+                    <form id="deleteForm" method="post">
+
+                        <input type="hidden"
+                            name="_method"
+                            value="DELETE">
+
+                        <button type="submit"
                             class="btn btn-danger">
-                        Sí, eliminar
+                            Sí, eliminar
+                        </button>
+
+                    </form>
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                        Cancelar
                     </button>
 
-                </form>
-
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal">
-                    Cancelar
-                </button>
+                </div>
 
             </div>
 
         </div>
 
     </div>
-
 </div>
-
 <script>
-
-function setDoctorId(id)
-{
-    document.getElementById('deleteForm').action =
-        '/doctor/' + id;
-}
-
+    function setDoctorId(id) {
+        document.getElementById('deleteForm').action =
+            '<?= site_url('doctor') ?>/' + id;
+    }
 </script>
 <?= $this->endSection() ?>
