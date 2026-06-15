@@ -15,7 +15,7 @@
                 type="text"
                 name="query"
                 class="form-control"
-                placeholder="Buscar por nombre">
+                placeholder="Buscar Doctor por ID, Nombre, Especialidad o Cédula">
             <button type="button" class="btn btn-danger"
                 onclick="document.querySelector('input[name=\'query\']').value=''; window.location='<?= site_url('doctor/search') ?>'">
                 X
